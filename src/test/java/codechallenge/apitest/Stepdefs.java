@@ -18,11 +18,11 @@ public class Stepdefs {
     private static RequestSpecification requestSpecification;
     private static Response response;
     private static String userName;
+    private static String commentID;
 
     @Given("^User \"([^\"]*)\" logs in$")
     public void user_something_logs_in(String strArg1) throws Throwable {
         userName = strArg1;
-       // throw new PendingException();
     }
 
     @When("^User creates comment for a gist with ID \"([^\"]*)\"$")
@@ -45,20 +45,26 @@ public class Stepdefs {
                 .header("Authorization", "Basic cGlvdHIuc3p5c3prb0BnbWFpbC5jb206S3JlbWF0b3JpdW0jMDk=");
 
         response = requestSpecification.when().get();
+        getCommentID();
     }
 
-    @When("^User gets comment with ID \"([^\"]*)\" for a gist with ID \"([^\"]*)\"$")
-    public void user_gets_comment_with_id_something_for_a_gist_with_id_something(String strArg1, String strArg2) throws Throwable {
+    public void getCommentID(){
+        commentID = response.jsonPath().get("[0].id").toString();
+        System.out.println("Comment id: " + commentID);
+    }
+
+    @When("^User gets comment for a gist with ID \"([^\"]*)\"$")
+    public void user_gets_comment_for_a_gist_with_id_something(String strArg1) throws Throwable {
         requestSpecification = given().log().all()
-                .baseUri("https://api.github.com/gists/" + strArg2 + "/comments/" + strArg1)
+                .baseUri("https://api.github.com/gists/" + strArg1 + "/comments/" + commentID)
                 .header("Authorization", "Basic cGlvdHIuc3p5c3prb0BnbWFpbC5jb206S3JlbWF0b3JpdW0jMDk=");
 
         response = requestSpecification.when().get();
     }
 
-    @When("^User updates comment with ID \"([^\"]*)\" for a gist with ID \"([^\"]*)\"$")
-    public void user_updates_comment_with_id_something_for_a_gist_with_id_something(String strArg1, String strArg2) throws Throwable {
-        requestSpecification = given().log().all().baseUri("https://api.github.com/gists/" + strArg2 + "/comments/" + strArg1)
+    @When("^User updates comment for a gist with ID \"([^\"]*)\"$")
+    public void user_updates_comment_for_a_gist_with_id_something(String strArg1) throws Throwable {
+        requestSpecification = given().log().all().baseUri("https://api.github.com/gists/" + strArg1 + "/comments/" + commentID)
                 .header("Authorization", "Basic cGlvdHIuc3p5c3prb0BnbWFpbC5jb206S3JlbWF0b3JpdW0jMDk=")
                 .header("Content-Type", "application/json")
                 //.header("Cookie", "_octo=GH1.1.1887974940.1592602259; logged_in=no")
@@ -69,10 +75,10 @@ public class Stepdefs {
         response = requestSpecification.when().patch();
     }
 
-    @When("^User deletes comment with ID \"([^\"]*)\" for a gist with ID \"([^\"]*)\"$")
-    public void user_deletes_comment_with_id_something_for_a_gist_with_id_something(String strArg1, String strArg2) throws Throwable {
+    @When("^User deletes comment for a gist with ID \"([^\"]*)\"$")
+    public void user_deletes_comment_for_a_gist_with_id_something(String strArg1) throws Throwable {
         requestSpecification = given().log().all()
-                .baseUri("https://api.github.com/gists/" + strArg2 + "/comments/" + strArg1)
+                .baseUri("https://api.github.com/gists/" + strArg1 + "/comments/" + commentID)
                 .header("Authorization", "Basic cGlvdHIuc3p5c3prb0BnbWFpbC5jb206S3JlbWF0b3JpdW0jMDk=");
 
         response = requestSpecification.when().delete();
